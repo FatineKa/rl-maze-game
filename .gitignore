@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+
+# Virtual envs (just in case)
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Hermes-specific
+data/*.db
+data/*.sqlite
+models/*.pt
+models/*.pth
+logs/*.log
+
+# But keep empty folder placeholders
+!data/.gitkeep
+!models/.gitkeep
+!logs/.gitkeep
