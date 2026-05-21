@@ -42,8 +42,28 @@ TILE_WALL = 1   # Solid wall, blocks movement
 # Colors
 # Pygame colors are (Red, Green, Blue) tuples, each 0-255.
 
-COLOR_BACKGROUND = (15, 15, 25)      # Deep blue-black — the void around the dungeon
-COLOR_FLOOR = (60, 55, 70)           # Muted purple-grey — dim stone
-COLOR_WALL = (110, 95, 80)           # Warm beige — torchlit walls
-COLOR_FLOOR_OUTLINE = (40, 35, 50)   # Slightly darker than floor for subtle grid lines
-COLOR_TEXT = (220, 200, 150)         # Warm gold for any text overlays
+COLOR_BACKGROUND = (116, 145, 97)      
+COLOR_FLOOR = (102, 59, 23)           
+COLOR_WALL = (81, 145,45)           
+COLOR_FLOOR_OUTLINE = (56, 107, 25)   
+COLOR_TEXT = (220, 200, 150)         
+
+
+# Character
+# The player character will be drawn as a square filling most (but not all)
+# of its tile, with a small inset so we can see the floor around it.
+# This makes the character visually distinct from the tiles themselves.
+CHARACTER_INSET = 4  # Pixels of margin inside the tile
+
+# A warm, slightly desaturated red — readable on the muted dungeon palette
+# without screaming for attention. We'll customize this per-user later.
+COLOR_CHARACTER = (200, 110, 90)
+
+
+# Movement
+# Directions as (dx, dy) tuples. dx is column change, dy is row change.
+# y increases downward in screen coordinates — that's why UP is -1.
+DIRECTION_UP = (0, -1)
+DIRECTION_DOWN = (0, 1)
+DIRECTION_LEFT = (-1, 0)
+DIRECTION_RIGHT = (1, 0)

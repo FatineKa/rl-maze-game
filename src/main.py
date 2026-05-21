@@ -1,10 +1,9 @@
 """
 Hermes — entry point.
 
-Opens the Pygame window and runs the main game loop. Each iteration of
-the loop handles input, updates state, draws, and ticks the clock.
-At this stage there's no movement or game logic yet — we're just
-showing a static dungeon to confirm rendering works.
+Opens the Pygame window and runs the main game loop. The player can
+move a character through a hardcoded dungeon using the arrow keys.
+Movement is discrete: one key-press equals one tile.
 """
 
 import sys
@@ -18,80 +17,110 @@ from src.game.constants import (
     GRID_HEIGHT,
     TILE_SIZE,
     COLOR_BACKGROUND,
+    DIRECTION_UP,
+    DIRECTION_DOWN,
+    DIRECTION_LEFT,
+    DIRECTION_RIGHT,
 )
 from src.game.dungeon import create_dungeon
+from src.game.character import Character
+from src.game.physics import try_move, is_walkable
 from src.rendering.dungeon_renderer import draw_dungeon
+from src.rendering.character_renderer import draw_character
+
+
+# Mapping from Pygame key codes to direction vectors.
+# Defining this as a module-level dict means the event loop below
+# stays clean — no long if/elif chain for every arrow key.
+KEY_TO_DIRECTION = {
+    pygame.K_UP: DIRECTION_UP,
+    pygame.K_DOWN: DIRECTION_DOWN,
+    pygame.K_LEFT: DIRECTION_LEFT,
+    pygame.K_RIGHT: DIRECTION_RIGHT,
+    # WASD as alternatives, because some people prefer them.
+    pygame.K_w: DIRECTION_UP,
+    pygame.K_s: DIRECTION_DOWN,
+    pygame.K_a: DIRECTION_LEFT,
+    pygame.K_d: DIRECTION_RIGHT,
+}
+
+
+def find_spawn_point(dungeon):
+    """
+    Find the first walkable tile in the dungeon to spawn the character.
+
+    We scan left-to-right, top-to-bottom, so this finds the upper-left-most
+    floor tile. Good enough for a hardcoded dungeon; later we'll have the
+    procedural generator designate a proper spawn point.
+    """
+    for y in range(GRID_HEIGHT):
+        for x in range(GRID_WIDTH):
+            if is_walkable(dungeon, x, y):
+                return x, y
+
+    # If no walkable tile exists, the dungeon is malformed.
+    # Better to fail loudly than spawn the player inside a wall.
+    raise RuntimeError("Dungeon has no walkable tiles for spawn.")
 
 
 def main():
-    # Pygame needs to be initialized before any of its features work.
-    # This call sets up the audio, font, display, and event subsystems.
     pygame.init()
-
-    # Create the window with thechosen size, and give it a title.
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.display.set_caption("Hermes")
-
-    # A Clock object lets us cap the frame rate. Without this the loop
-    # would run as fast as the CPU allows, wasting power and making
-    # any future motion-based code behave inconsistently across machines.
     clock = pygame.time.Clock()
 
-    # Build the dungeon once at startup. (Later we'll regenerate it
-    # at level transitions, but for now one dungeon for the whole session.)
+    # Build the world.
     dungeon = create_dungeon()
+    spawn_x, spawn_y = find_spawn_point(dungeon)
+    player = Character(spawn_x, spawn_y)
 
-    # Compute where the dungeon should sit on screen. We want it centered:
-    # window is WINDOW_WIDTH wide, dungeon is GRID_WIDTH*TILE_SIZE wide,
-    # so the left margin is half the difference.
+    # Center the dungeon in the window (same math as before).
     dungeon_pixel_width = GRID_WIDTH * TILE_SIZE
     dungeon_pixel_height = GRID_HEIGHT * TILE_SIZE
     offset_x = (WINDOW_WIDTH - dungeon_pixel_width) // 2
     offset_y = (WINDOW_HEIGHT - dungeon_pixel_height) // 2
 
-    # The main loop 
-    # Almost every game ever made is structured around a loop like this.
-    # The body runs ~60 times per second (controlled by clock.tick at the end).
     running = True
     while running:
 
         # --- 1. Handle events ---
-        # Pygame queues up events (key presses, mouse moves, window close)
-        # and we process them all each frame.
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                # Window close button was clicked.
                 running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    # Escape key — also exit. 
                     running = False
+                    continue
+
+                # Did this key map to a movement direction?
+                # .get() returns None if the key isn't in our mapping —
+                # cleaner than checking with `if key in dict` first.
+                direction = KEY_TO_DIRECTION.get(event.key)
+                if direction is not None:
+                    dx, dy = direction
+                    # try_move handles the collision check internally.
+                    # We could use the return value to play a "bump" sound
+                    # on a failed move, but no sounds yet — ignore for now.
+                    try_move(player, dungeon, dx, dy)
 
         # --- 2. Update game state ---
-        # Nothing to update yet. Once we have a moving character or
-        # animated tiles, this is where their per-frame logic will live.
+        # Still nothing here at the per-frame level. Movement happens
+        # in response to events above, not on every frame.
 
         # --- 3. Draw everything ---
-        # Order matters: things drawn later appear ON TOP of things drawn earlier.
-        # Right now we fill the background, then draw the dungeon. Soon we'll
-        # add: dungeon -> entities -> character -> HUD -> menu overlays.
+        # Drawing order: background -> dungeon -> character.
+        # The character must be drawn AFTER the dungeon so it appears on top.
         screen.fill(COLOR_BACKGROUND)
         draw_dungeon(screen, dungeon, offset_x, offset_y)
-
-        # display.flip() pushes our newly-drawn frame to the actual screen.
-        # Until you call this, everything you drew lives in memory invisible.
+        draw_character(screen, player, offset_x, offset_y)
         pygame.display.flip()
 
         # --- 4. Tick the clock ---
-        # Tells Pygame to wait however long is needed so we don't exceed FPS.
         clock.tick(FPS)
 
-    # Clean shutdown — close the window, release resources.
     pygame.quit()
     sys.exit()
 
 
 if __name__ == "__main__":
-    # This idiom means "only run main() if this file is executed directly,
-    # not if it's imported as a module." It's standard in Python entry points.
     main()
