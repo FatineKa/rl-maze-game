@@ -1,5 +1,5 @@
 """
-Hermes — entry point.
+RL Maze Game — entry point.
 
 Opens the Pygame window and runs the main game loop. The player can
 move a character through a hardcoded dungeon using the arrow keys.
@@ -66,7 +66,7 @@ def find_spawn_point(dungeon):
 def main():
     pygame.init()
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-    pygame.display.set_caption("Hermes")
+    pygame.display.set_caption("RL Maze Game")
     clock = pygame.time.Clock()
 
     # Build the world.

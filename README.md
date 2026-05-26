@@ -1,14 +1,13 @@
-# Hermes
+# RL Maze Game
 
-A messenger god lost in a labyrinth. A 2D dungeon explorer where you wander
-shadowed corridors alongside a learning shade — an AI that doesn't follow a
-script, but figures the maze out as it goes.
+A 2D dungeon explorer where you wander shadowed corridors alongside a learning
+shade — an AI that doesn't follow a script, but figures the maze out as it goes.
 
 Built with Pygame, Gymnasium, and PyTorch.
 
 ## The premise
 
-Hermes is half game, half experiment. The player walks through a procedurally
+RL Maze Game is half game, half experiment. The player walks through a procedurally
 arranged dungeon: walls, doors, rooms, the occasional pocket of loot. Somewhere
 in there, an agent walks too. It doesn't know the maze any better than you do.
 It learns.
@@ -20,7 +19,7 @@ actor-critic methods when training time permits.
 
 The player has a face of their own. Outfits, hair, accessories — layered
 sprites stitched together at runtime and saved per username, so the next time
-you load Hermes, your traveler is dressed exactly as you left them.
+you load the game, your traveler is dressed exactly as you left them.
 
 ## Why three things at once
 
@@ -37,13 +36,13 @@ Keeping these three honest about their own boundaries is most of the work.
 
 Requires Python 3.11 and Miniconda.
 
-    conda create -n hermes python=3.11
-    conda activate hermes
+    conda create -n rl-maze-game python=3.11
+    conda activate rl-maze-game
     pip install -r requirements.txt
 
 ## Running
 
-    conda activate hermes
+    conda activate rl-maze-game
     python src/main.py
 
 ## Project layout
