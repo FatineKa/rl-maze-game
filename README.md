@@ -12,25 +12,9 @@ arranged dungeon: walls, doors, rooms, the occasional pocket of loot. Somewhere
 in there, an agent walks too. It doesn't know the maze any better than you do.
 It learns.
 
-The agent can be companion, rival, or quiet bystander, depending on how the
-session is configured. Underneath, it's a reinforcement learning policy —
-swappable between Dyna-Q for the small worlds, DQN for the larger ones, and
-actor-critic methods when training time permits.
-
-The player has a face of their own. Outfits, hair, accessories — layered
-sprites stitched together at runtime and saved per username, so the next time
-you load the game, your traveler is dressed exactly as you left them.
-
-## Why three things at once
-
-The project is deliberately three layers that don't usually appear in one
-codebase:
-
-- A **game** that has to feel responsive and look intentional
-- A **reinforcement learning** loop that can train headlessly on the same world
-- A **system** with users, saved appearances, scores, and customization unlocks
-
-Keeping these three honest about their own boundaries is most of the work.
+Underneath, it's a reinforcement learning policy — swappable between Dyna-Q
+for small worlds, DQN for larger ones, and actor-critic methods when training
+time permits. The agent can also be trained headlessly without the game window.
 
 ## Setup
 
@@ -49,13 +33,10 @@ Requires Python 3.11 and Miniconda.
 
     src/game/             core game logic, no rendering
     src/rendering/        all Pygame drawing
-    src/character_system/ layered appearance, catalog of items
     src/env/              Gymnasium wrapper around the game
-    src/rl/               agents, training, evaluation
-    src/ui/               Pygame screens (login, customize, gameplay)
-    src/services/         business logic (users, scores, customization)
-    src/data/             SQLite access layer
-    src/utils/            logging, config, asset loading
+    src/rl/               agents, policies, training, evaluation
+    src/analysis/         logging and plots
+    src/utils/            config, asset loading
 
 Design notes and architecture decisions live in `docs/`.
 
