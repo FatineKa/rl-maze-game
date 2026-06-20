@@ -1,15 +1,5 @@
 """
-The learning agent: a policy + an exploration schedule.
-
-The Agent is the object the training loop talks to. It wraps whichever policy
-is active (random or dyna_q) and manages the epsilon schedule:
-
-  - At the start of training, epsilon = 1.0 → the agent acts completely randomly.
-  - After every episode, epsilon decays: epsilon = epsilon * EPSILON_DECAY.
-  - Epsilon never drops below EPSILON_END, so the agent keeps exploring a little.
-
-Why do we need exploration? Because the agent needs to visit parts of the maze
-it hasn't seen yet — it can't learn from experience it never had.
+Agent wrapper coordinates policy action selection and exploration schedules.
 """
 
 import numpy as np
@@ -19,7 +9,9 @@ from src.rl.policies import build_policy
 
 
 class Agent:
-    """Wraps a policy and manages epsilon-greedy exploration."""
+    """
+    Wraps the active learning policy and manages epsilon-greedy exploration.
+    """
 
     def __init__(self, env, policy_name="dyna_q"):
         n_states = env.observation_space.n
@@ -35,19 +27,21 @@ class Agent:
 
     def act(self, state, training=True):
         """
-        Choose an action.
-        During training: use epsilon-greedy (random sometimes).
-        During evaluation: act greedily (always pick the best known action).
+        Select an action. If training, applies epsilon-greedy exploration.
         """
         epsilon = self.epsilon if training else 0.0
         return self.policy.select_action(state, epsilon)
 
     def learn(self, state, action, reward, next_state, next_action, terminated):
-        """Pass a transition to the policy so it can update its Q-values."""
+        """
+        Pass transition details to update the underlying policy.
+        """
         self.policy.update(state, action, reward, next_state, next_action, terminated)
 
     def end_episode(self):
-        """Decay exploration after each episode, but never below the floor."""
+        """
+        Decay exploration rate after each episode down to the minimum floor.
+        """
         self.epsilon = max(self.epsilon_end, self.epsilon * self.epsilon_decay)
 
     def save(self, path):

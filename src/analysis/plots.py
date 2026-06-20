@@ -1,13 +1,5 @@
 """
-Turn a training metrics CSV into charts.
-
-Reads the file written by MetricsLogger and saves three PNGs:
-  - reward.png      : episode reward over time (raw + moving average)
-  - success_rate.png: rolling success rate
-  - steps.png       : steps taken per episode
-
-Run standalone:
-    python -m src.analysis.plots results/dyna_q_metrics.csv
+Plots training performance metrics from CSV data.
 """
 
 import argparse
@@ -15,12 +7,12 @@ import csv
 from pathlib import Path
 
 import matplotlib
-matplotlib.use("Agg")  # no display needed; saves directly to file
+matplotlib.use("Agg")  # Run headless without window display
 import matplotlib.pyplot as plt
 
 
 def _read_metrics(csv_path):
-    """Read the CSV into parallel lists."""
+    """Parses CSV metrics into lists."""
     episodes, rewards, steps, success = [], [], [], []
     with open(csv_path, "r", encoding="utf-8") as f:
         for row in csv.DictReader(f):
@@ -32,7 +24,7 @@ def _read_metrics(csv_path):
 
 
 def _moving_average(values, window):
-    """Trailing moving average; returned list has the same length as input."""
+    """Computes a trailing moving average."""
     out = []
     running = 0.0
     for i, v in enumerate(values):
@@ -45,15 +37,14 @@ def _moving_average(values, window):
 
 def plot_training(csv_path, out_dir="results", window=50):
     """
-    Generate and save the three standard training charts.
-    Returns the list of saved file paths.
+    Generates and saves performance charts (reward, success rate, path steps).
     """
     episodes, rewards, steps, success = _read_metrics(csv_path)
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     saved = []
 
-    # 1. Reward per episode.
+    # Reward chart
     fig, ax = plt.subplots(figsize=(8, 4))
     ax.plot(episodes, rewards, color="lightsteelblue", linewidth=0.8, label="reward")
     ax.plot(episodes, _moving_average(rewards, window), color="navy",
@@ -64,7 +55,7 @@ def plot_training(csv_path, out_dir="results", window=50):
     ax.legend()
     saved.append(_save(fig, out / "reward.png"))
 
-    # 2. Rolling success rate.
+    # Success rate chart
     fig, ax = plt.subplots(figsize=(8, 4))
     ax.plot(episodes, _moving_average(success, window), color="seagreen", linewidth=1.5)
     ax.set_ylim(-0.02, 1.02)
@@ -73,7 +64,7 @@ def plot_training(csv_path, out_dir="results", window=50):
     ax.set_title("Success rate")
     saved.append(_save(fig, out / "success_rate.png"))
 
-    # 3. Steps per episode.
+    # Steps chart
     fig, ax = plt.subplots(figsize=(8, 4))
     ax.plot(episodes, steps, color="indianred", linewidth=0.8, label="steps")
     ax.plot(episodes, _moving_average(steps, window), color="darkred",
@@ -103,7 +94,7 @@ def main():
 
     saved = plot_training(args.csv, args.out, args.window)
     for path in saved:
-        print(f"wrote {path}")
+        print(f"Saved plot: {path}")
 
 
 if __name__ == "__main__":

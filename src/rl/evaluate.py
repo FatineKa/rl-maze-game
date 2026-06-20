@@ -1,13 +1,5 @@
 """
-Evaluation: measure how good a policy is right now.
-
-evaluate() runs several greedy episodes (no exploration, no learning) and
-reports the averages: reward, success rate, and steps to reach the goal.
-
-It is called periodically during training and can also be run standalone
-against a saved checkpoint:
-
-    python -m src.rl.evaluate models/dyna_q_final
+Stand-alone evaluation utility for testing trained policies.
 """
 
 import argparse
@@ -17,18 +9,13 @@ from src.config import EVAL_EPISODES
 from src.env.rl_maze_env import RLMazeEnv
 from src.rl.agent import Agent
 
-
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger("eval")
 
 
 def evaluate(env, agent, episodes):
     """
-    Run `episodes` greedy episodes and return aggregate metrics.
-
-    Returns a dict: mean_reward, success_rate, mean_steps.
-    mean_steps is averaged over successful episodes only (a failed episode
-    just hits the step limit, which would skew the average).
+    Runs greedy evaluation episodes (no learning or exploration) and returns aggregates.
     """
     total_reward = 0.0
     successes = 0
@@ -63,11 +50,11 @@ def evaluate(env, agent, episodes):
 
 def main():
     parser = argparse.ArgumentParser(description="Evaluate a saved policy checkpoint.")
-    parser.add_argument("checkpoint", help="path to a checkpoint (e.g. models/dyna_q_final)")
+    parser.add_argument("checkpoint", help="Path to checkpoint file (e.g. models/dyna_q_final)")
     parser.add_argument("--agent", default="dyna_q", choices=["dyna_q", "random"],
-                        help="which policy type was saved (default: dyna_q)")
+                        help="Policy type (default: dyna_q)")
     parser.add_argument("--episodes", type=int, default=EVAL_EPISODES,
-                        help="number of evaluation episodes")
+                        help="Evaluation episode count")
     args = parser.parse_args()
 
     env = RLMazeEnv()

@@ -1,5 +1,5 @@
 """
-Movement and collision checks. No state, just functions.
+Movement and collision utility functions.
 """
 
 from src.game.constants import TILE_WALL, GRID_WIDTH, GRID_HEIGHT
@@ -7,9 +7,7 @@ from src.game.constants import TILE_WALL, GRID_WIDTH, GRID_HEIGHT
 
 def is_walkable(dungeon, x, y):
     """
-    Returns True if (x, y) is in bounds and not a wall.
-    Bounds are checked first — Python's negative indexing would
-    silently wrap out-of-range values otherwise.
+    Returns True if grid coordinate (x, y) is in bounds and is not a wall.
     """
     if x < 0 or x >= GRID_WIDTH:
         return False
@@ -21,8 +19,8 @@ def is_walkable(dungeon, x, y):
 
 def try_move(character, dungeon, dx, dy):
     """
-    Moves the character by (dx, dy) if the destination is walkable.
-    Returns True if the move happened, False if it was blocked.
+    Updates the character's position if the target cell is walkable.
+    Returns True if moved, False if blocked by a wall or boundary.
     """
     new_x = character.x + dx
     new_y = character.y + dy

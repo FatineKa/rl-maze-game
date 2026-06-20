@@ -1,6 +1,5 @@
 """
-Entry point. Opens the window and runs the game loop.
-Arrow keys and WASD move the player one tile at a time.
+Playable manual-controlled entry point for the game.
 """
 
 import sys
@@ -25,8 +24,6 @@ from src.game.physics import try_move, is_walkable
 from src.rendering.dungeon_renderer import draw_dungeon
 from src.rendering.character_renderer import draw_character
 
-
-# maps key codes to direction vectors so the event loop stays clean
 KEY_TO_DIRECTION = {
     pygame.K_UP: DIRECTION_UP,
     pygame.K_DOWN: DIRECTION_DOWN,
@@ -41,8 +38,7 @@ KEY_TO_DIRECTION = {
 
 def find_spawn_point(dungeon):
     """
-    Returns the first walkable tile found scanning top-left to bottom-right.
-    Will be replaced once procedural generation adds a proper spawn point.
+    Finds the first walkable tile scanning from top-left.
     """
     for y in range(GRID_HEIGHT):
         for x in range(GRID_WIDTH):
@@ -62,7 +58,7 @@ def main():
     spawn_x, spawn_y = find_spawn_point(dungeon)
     player = Character(spawn_x, spawn_y)
 
-    # center the dungeon in the window
+    # Offset to center grid inside the screen window
     dungeon_pixel_width = GRID_WIDTH * TILE_SIZE
     dungeon_pixel_height = GRID_HEIGHT * TILE_SIZE
     offset_x = (WINDOW_WIDTH - dungeon_pixel_width) // 2
@@ -70,7 +66,6 @@ def main():
 
     running = True
     while running:
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -83,8 +78,6 @@ def main():
                 if direction is not None:
                     dx, dy = direction
                     try_move(player, dungeon, dx, dy)
-
-        # nothing to update per-frame yet, movement is event-driven
 
         screen.fill(COLOR_BACKGROUND)
         draw_dungeon(screen, dungeon, offset_x, offset_y)

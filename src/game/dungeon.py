@@ -1,6 +1,5 @@
 """
-Builds the dungeon grid.
-Currently hardcoded — will be replaced with procedural generation.
+Generates the dungeon grid from a hardcoded layout template.
 """
 
 from src.game.constants import (
@@ -10,9 +9,7 @@ from src.game.constants import (
     TILE_WALL,
 )
 
-
-# '#' = wall, '.' = floor
-# written as strings so the layout is readable in source
+# Template representation of the maze: '#' is wall, '.' is floor
 _RAW_LAYOUT = [
     "####################",
     "#..................#",
@@ -34,8 +31,8 @@ _RAW_LAYOUT = [
 
 def create_dungeon():
     """
-    Converts the raw layout into a 2D list of tile ints.
-    grid[y][x] gives the tile at column x, row y.
+    Parses _RAW_LAYOUT into a 2D list of tile integers.
+    grid[y][x] returns the tile at column x, row y.
     """
     grid = []
 
@@ -48,7 +45,7 @@ def create_dungeon():
                 row_tiles.append(TILE_FLOOR)
         grid.append(row_tiles)
 
-    # catch mismatches between the layout and the declared grid size
+    # Validate template matches configuration dimensions
     assert len(grid) == GRID_HEIGHT, (
         f"Layout has {len(grid)} rows but GRID_HEIGHT is {GRID_HEIGHT}"
     )

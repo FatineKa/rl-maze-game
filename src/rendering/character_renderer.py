@@ -1,5 +1,5 @@
 """
-Draws a character to the screen.
+Renders a character at their grid position.
 """
 
 import pygame
@@ -13,10 +13,8 @@ from src.game.constants import (
 
 def draw_character(screen, character, offset_x=0, offset_y=0):
     """
-    Draws the character at its current grid position.
-    offset_x/offset_y must match what was passed to draw_dungeon.
+    Renders character tile using pixel offsets.
     """
-    # convert grid position to pixels, then apply the inset
     pixel_x = offset_x + character.x * TILE_SIZE + CHARACTER_INSET
     pixel_y = offset_y + character.y * TILE_SIZE + CHARACTER_INSET
     size = TILE_SIZE - 2 * CHARACTER_INSET

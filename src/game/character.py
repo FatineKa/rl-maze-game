@@ -1,22 +1,18 @@
 """
-Character class — used for both the player and the RL agent.
+Character class for tracking grid position.
 """
-
 
 class Character:
     """
-    Holds the position of a character on the grid.
-
-    x and y are grid coordinates, not pixels.
-    Pixel conversion happens only in the renderer.
+    Tracks the grid coordinates of the player or agent.
+    Coordinate-to-pixel conversion is handled by the renderer.
     """
 
     def __init__(self, x, y):
-        # no walkability check here — that's the caller's job
         self.x = x
         self.y = y
 
     def move(self, dx, dy):
-        """Move by (dx, dy) tiles."""
+        """Update grid position by dx, dy."""
         self.x += dx
         self.y += dy
