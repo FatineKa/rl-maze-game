@@ -25,9 +25,12 @@ data/*.db
 data/*.sqlite
 models/*.pt
 models/*.pth
+models/*.npz
+results/*.csv
 logs/*.log
 
 # But keep empty folder placeholders
 !data/.gitkeep
 !models/.gitkeep
 !logs/.gitkeep
+!results/.gitkeep
