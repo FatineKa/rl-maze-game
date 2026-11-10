@@ -4,6 +4,8 @@ A 2D maze game where a reinforcement learning agent learns to navigate from star
 
 ![AI Agent Gameplay](docs/gameplay.gif)
 
+![How Dyna-Q learns](docs/dyna_q.png)
+
 ---
 
 ## Project Structure
